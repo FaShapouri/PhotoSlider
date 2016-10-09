@@ -8,13 +8,13 @@
 
 import UIKit
 
-public class Photo: NSObject {
+open class Photo: NSObject {
     
-    public var imageURL: NSURL?
-    public var image: UIImage?
-    public var caption = ""
+    open var imageURL: URL?
+    open var image: UIImage?
+    open var caption = ""
     
-    public init(imageURL: NSURL) {
+    public init(imageURL: URL) {
         super.init()
         self.imageURL = imageURL
     }
@@ -24,7 +24,7 @@ public class Photo: NSObject {
         self.image = image
     }
     
-    public init(imageURL: NSURL, caption: String) {
+    public init(imageURL: URL, caption: String) {
         super.init()
         self.imageURL = imageURL
         self.caption = caption

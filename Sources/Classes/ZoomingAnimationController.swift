@@ -10,26 +10,26 @@ import UIKit
 
 public protocol ZoomingAnimationControllerTransitioning {
     func transitionSourceImageView() -> UIImageView
-    func transitionDestinationImageView(sourceImageView: UIImageView)
+    func transitionDestinationImageView(_ sourceImageView: UIImageView)
 }
 
 
-public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+open class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
 
     var present = true
-    public var sourceTransition: ZoomingAnimationControllerTransitioning?
-    public var destinationTransition: ZoomingAnimationControllerTransitioning?
+    open var sourceTransition: ZoomingAnimationControllerTransitioning?
+    open var destinationTransition: ZoomingAnimationControllerTransitioning?
 
     public init(present: Bool) {
         super.init()
         self.present = present
     }
     
-    public func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    open func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.2
     }
     
-    public func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    open func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
         if self.present {
             self.animatePresenting(transitionContext)
@@ -38,21 +38,21 @@ public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTrans
         }
     }
     
-    func animatePresenting(transitionContext:UIViewControllerContextTransitioning) {
+    func animatePresenting(_ transitionContext:UIViewControllerContextTransitioning) {
 
-        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
-        let containerView = transitionContext.containerView()!
+        let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!
+        let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!
+        let containerView = transitionContext.containerView
 
-        let snapshotView = fromViewController.view.resizableSnapshotViewFromRect(fromViewController.view.frame, afterScreenUpdates: true, withCapInsets: UIEdgeInsetsZero)
-        containerView.addSubview(snapshotView)
+        let snapshotView = fromViewController.view.resizableSnapshotView(from: fromViewController.view.frame, afterScreenUpdates: true, withCapInsets: UIEdgeInsets.zero)
+        containerView.addSubview(snapshotView!)
         
         toViewController.view.alpha = 0.0
         containerView.addSubview(toViewController.view)
         
         
         let backgroundView = UIView(frame: fromViewController.view.frame)
-        backgroundView.backgroundColor = UIColor.blackColor()
+        backgroundView.backgroundColor = UIColor.black
         backgroundView.alpha = 0.0
         containerView.addSubview(backgroundView)
         
@@ -60,10 +60,10 @@ public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTrans
         containerView.addSubview(sourceImageView)
 
 
-        UIView.animateWithDuration(
-            self.transitionDuration(transitionContext),
+        UIView.animate(
+            withDuration: self.transitionDuration(using: transitionContext),
             delay: 0.0,
-            options: UIViewAnimationOptions.CurveEaseOut,
+            options: UIViewAnimationOptions.curveEaseOut,
             animations: { () -> Void in
                 
                 self.destinationTransition!.transitionDestinationImageView(sourceImageView)
@@ -77,17 +77,17 @@ public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTrans
                 toViewController.view.alpha = 1.0
                 backgroundView.removeFromSuperview()
                 
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
 
         }
         
     }
     
-    func animateDismiss(transitionContext:UIViewControllerContextTransitioning) {
+    func animateDismiss(_ transitionContext:UIViewControllerContextTransitioning) {
         
-        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
-        let containerView = transitionContext.containerView()!
+        let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!
+        let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!
+        let containerView = transitionContext.containerView
         
         containerView.addSubview(toViewController.view)
         containerView.addSubview(fromViewController.view)
@@ -95,10 +95,10 @@ public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTrans
         let sourceImageView = self.sourceTransition!.transitionSourceImageView()
         containerView.addSubview(sourceImageView)
 
-        UIView.animateWithDuration(
-            self.transitionDuration(transitionContext),
+        UIView.animate(
+            withDuration: self.transitionDuration(using: transitionContext),
             delay: 0.0,
-            options: UIViewAnimationOptions.CurveEaseOut,
+            options: UIViewAnimationOptions.curveEaseOut,
             animations: { () -> Void in
                 
                 self.destinationTransition!.transitionDestinationImageView(sourceImageView)
@@ -110,7 +110,7 @@ public class ZoomingAnimationController: NSObject, UIViewControllerAnimatedTrans
                 fromViewController.view.alpha = 0.0
 
                 sourceImageView.removeFromSuperview()
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
                 
         }
     }
