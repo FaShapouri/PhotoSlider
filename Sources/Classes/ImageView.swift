@@ -13,7 +13,7 @@ protocol PhotoSliderImageViewDelegate {
 }
 
 class ImageView: UIView, UIScrollViewDelegate {
-
+    
     var imageView: UIImageView!
     var scrollView: UIScrollView!
     var progressView: PhotoSlider.ProgressView!
@@ -23,17 +23,17 @@ class ImageView: UIView, UIScrollViewDelegate {
         super.init(frame: frame)
         self.initialize()
     }
-
+    
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
         self.initialize()
     }
     
     func initialize() {
-
+        
         self.backgroundColor = UIColor.clear
         self.isUserInteractionEnabled = true
-
+        
         // for zoom
         self.scrollView = UIScrollView(frame: self.bounds)
         self.scrollView.showsHorizontalScrollIndicator = false
@@ -47,12 +47,12 @@ class ImageView: UIView, UIScrollViewDelegate {
         self.imageView = UIImageView(frame: CGRect.zero)
         self.imageView.contentMode = UIViewContentMode.scaleAspectFit
         self.imageView.isUserInteractionEnabled = true
-
+        
         self.addSubview(self.scrollView)
         self.layoutScrollView()
-
+        
         self.scrollView.addSubview(self.imageView)
-       
+        
         // progress view
         self.progressView = ProgressView(frame: CGRect.zero)
         self.progressView.isHidden = true
@@ -76,7 +76,7 @@ class ImageView: UIView, UIScrollViewDelegate {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-
+        
         let boundsSize = self.bounds.size
         var frameToCenter = self.imageView.frame
         
@@ -147,27 +147,27 @@ class ImageView: UIView, UIScrollViewDelegate {
         
         self.progressView.isHidden = false
         
-        self.imageView.kf_setImageWithURL(
+        self.imageView.kf.setImage(with:
             imageURL,
-            placeholderImage: nil,
-            optionsInfo: [.CacheMemoryOnly],
-            progressBlock: { (receivedSize, totalSize) -> () in
-                
-                let progress = Float(receivedSize) / Float(totalSize)
-                self.progressView.animateCurveToProgress(progress)
-
-            }) { (image, error, cacheType, imageURL) -> () in
-                self.progressView.hidden = true
-                
-                if error == nil {
-                    self.layoutImageView(image!)
-                }
+                                   placeholder: nil,
+                                   options: [.cacheMemoryOnly],
+                                   progressBlock: { (receivedSize, totalSize) -> () in
+                                    
+                                    let progress = Float(receivedSize) / Float(totalSize)
+                                    self.progressView.animateCurveToProgress(progress)
+                                    
+        }) { (image, error, cacheType, imageURL) -> () in
+            self.progressView.isHidden = true
+            
+            if error == nil {
+                self.layoutImageView(image!)
+            }
         }
         
     }
     
     func setImage(_ image:UIImage) {
-
+        
         self.imageView.image = image
         self.layoutImageView(image)
         
@@ -188,12 +188,12 @@ class ImageView: UIView, UIScrollViewDelegate {
             }
             
         } else {
-
+            
             frame.size = CGSize(width: width, height: self.bounds.height)
             if width >= self.bounds.width {
                 frame.size = CGSize(width: self.bounds.width, height: height)
             }
-
+            
         }
         
         self.imageView.frame = frame
@@ -209,19 +209,19 @@ class ImageView: UIView, UIScrollViewDelegate {
     }
     
     func didDoubleTap(_ sender: UIGestureRecognizer) {
-
+        
         if self.scrollView.zoomScale == 1.0 {
-
+            
             let touchPoint = sender.location(in: self)
             self.scrollView.zoom(to: CGRect(x: touchPoint.x, y: touchPoint.y, width: 1, height: 1), animated: true)
-
-
+            
+            
             
         } else {
-
+            
             self.scrollView.setZoomScale(0.0, animated: true)
-
-
+            
+            
         }
     }
     

@@ -7,32 +7,32 @@
 
 import UIKit
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
 }
 
 fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l >= r
-  default:
-    return !(lhs < rhs)
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l >= r
+    default:
+        return !(lhs < rhs)
+    }
 }
 
 fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
 }
 
 
@@ -50,9 +50,9 @@ enum PhotoSliderControllerUsingImageType:UInt {
 }
 
 open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderImageViewDelegate, ZoomingAnimationControllerTransitioning {
-
+    
     var scrollView:UIScrollView!
-
+    
     var imageURLs:Array<URL>?
     var images:Array<UIImage>?
     var photos:Array<PhotoSlider.Photo>?
@@ -66,13 +66,13 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     var imageViews = Array<PhotoSlider.ImageView>()
     var previousPage = 0
     var captionLabel = UILabel(frame: CGRect.zero)
-
-
+    
+    
     open var delegate: PhotoSliderDelegate? = nil
     open var visiblePageControl = true
     open var visibleCloseButton = true
     open var currentPage = 0
-
+    
     open var pageControl = UIPageControl()
     open var backgroundViewColor = UIColor.black
     open var captionTextColor = UIColor.white
@@ -82,13 +82,13 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         self.imageURLs = imageURLs
         self.usingImageType = .url
     }
-
+    
     public init(images:Array<UIImage>) {
         super.init(nibName: nil, bundle: nil)
         self.images = images
         self.usingImageType = .image
     }
-
+    
     public init(photos:Array<PhotoSlider.Photo>) {
         super.init(nibName: nil, bundle: nil)
         self.photos = photos
@@ -98,16 +98,16 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
     }
-
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.view.frame = UIScreen.main.bounds
         self.view.backgroundColor = UIColor.clear
-
+        
         self.backgroundView = UIView(frame: self.view.bounds)
         self.backgroundView.backgroundColor = self.backgroundViewColor
-
+        
         if floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1 {
             self.view.addSubview(self.backgroundView)
         } else {
@@ -116,7 +116,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
             self.view.addSubview(self.effectView)
             self.effectView.addSubview(self.backgroundView)
         }
-
+        
         // scrollview setting for Item
         self.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height))
         self.scrollView.isPagingEnabled = true
@@ -130,12 +130,12 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         self.scrollView.accessibilityLabel = "PhotoSliderScrollView"
         self.view.addSubview(self.scrollView)
         self.layoutScrollView()
-
+        
         self.scrollView.contentSize = CGSize(
             width: self.view.bounds.width * CGFloat(self.imageResources()!.count),
             height: self.view.bounds.height * 3.0
         )
-
+        
         let width = self.view.bounds.width
         let height = self.view.bounds.height
         var frame = self.view.bounds
@@ -146,7 +146,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
             imageView.delegate = self
             self.scrollView.addSubview(imageView)
             
-            if type(of: imageResource) === URL.self {
+            if imageResource is URL {
                 imageView.loadImage(imageResource as! URL)
             } else if type(of: imageResource) === UIImage.self {
                 imageView.setImage(imageResource as! UIImage)
@@ -192,7 +192,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         
         self.updateCaption()
         self.setNeedsStatusBarAppearanceUpdate()
-
+        
     }
     
     override open func viewWillAppear(_ animated: Bool) {
@@ -252,7 +252,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     }
     
     // MARK: - UIScrollViewDelegate
-
+    
     var scrollPreviewPoint = CGPoint.zero
     open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
@@ -261,9 +261,9 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         self.scrollPreviewPoint = scrollView.contentOffset
         
     }
-
+    
     open func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
+        
         if scrollInitalized == false {
             self.generateCurrentPage()
             return
@@ -280,7 +280,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
             return
         }
         
-
+        
         let offsetX = fabs(scrollView.contentOffset.x - self.scrollPreviewPoint.x)
         let offsetY = fabs(scrollView.contentOffset.y - self.scrollPreviewPoint.y)
         
@@ -295,7 +295,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         if self.scrollMode == .vertical {
             let offsetHeight = fabs(scrollView.frame.size.height - scrollView.contentOffset.y)
             let alpha = 1.0 - ( fabs(offsetHeight) / (scrollView.frame.size.height / 2.0) )
-
+            
             self.backgroundView.alpha = alpha
             
             var contentOffset = scrollView.contentOffset
@@ -318,11 +318,11 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         
         // Update current page index.
         self.generateCurrentPage()
-
+        
     }
     
     func generateCurrentPage() {
-
+        
         var page = Int(round(scrollView.contentOffset.x / scrollView.frame.size.width))
         if page < 0 {
             page = 0
@@ -331,11 +331,11 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         }
         
         self.currentPage = page
-
+        
         if self.visiblePageControl {
             self.pageControl.currentPage = self.currentPage
         }
-
+        
     }
     
     open func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -393,33 +393,33 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     }
     
     open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-
+        
         if self.previousPage != self.currentPage {
-
+            
             // If page index has changed - reset zoom scale for previous image.
             let imageView = self.imageViews[self.previousPage]
             imageView.scrollView.zoomScale = imageView.scrollView.minimumZoomScale
             
             // Show Caption Label
             self.updateCaption()
-
+            
         }
         
         self.scrollMode = .none
-
+        
     }
     
     // MARK: - Button Actions
     
     func closeButtonDidTap(_ sender:UIButton) {
-
+        
         self.delegate?.photoSliderControllerWillDismiss?(self)
         self.dissmissViewControllerAnimated(true)
-
+        
     }
     
     // MARK: - PhotoSliderImageViewDelegate
-
+    
     func photoSliderImageViewDidEndZooming(_ viewController: PhotoSlider.ImageView, atScale scale: CGFloat) {
         if scale <= 1.0 {
             self.scrollView.isScrollEnabled = true
@@ -431,10 +431,10 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
                     self.pageControl.alpha = 1.0
                 }
                 }, completion: nil)
-
+            
         } else {
             self.scrollView.isScrollEnabled = false
-
+            
             UIView.animate(withDuration: 0.05, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: { () -> Void in
                 self.closeButton?.alpha = 0.0
                 self.captionLabel.alpha = 0.0
@@ -469,7 +469,7 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         }
         
         return Bundle(for: type(of: self))
-
+        
     }
     
     // MARK: - UITraitEnvironment
@@ -497,15 +497,15 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         // ImageViews
         var frame = CGRect(x: 0.0, y: contentViewBounds.height, width: contentViewBounds.width, height: contentViewBounds.height)
         for i in 0..<self.scrollView.subviews.count {
-
+            
             let imageView = self.scrollView.subviews[i] as! PhotoSlider.ImageView
             
             imageView.frame = frame
             frame.origin.x += contentViewBounds.size.width
             imageView.scrollView.frame = contentViewBounds
-
+            
             imageView.layoutImageView()
-
+            
         }
         
         self.scrollView.contentOffset = CGPoint(x: CGFloat(self.currentPage) * contentViewBounds.width, y: height)
@@ -532,17 +532,17 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
         var width = CGFloat(0.0)
         
         if self.view.bounds.width < self.view.bounds.height {
-                
+            
             height = (self.view.frame.width * sourceImage.size.height) / sourceImage.size.width
             width  = self.view.frame.width
-
+            
         } else {
-
+            
             height = self.view.frame.height
             width  = (self.view.frame.height * sourceImage.size.width) / sourceImage.size.height
-
+            
         }
-
+        
         sourceImageView.frame = CGRect(x: 0.0, y: 0.0, width: width, height: height)
         sourceImageView.center = CGPoint(
             x: self.view.frame.width * 0.5,
@@ -553,9 +553,9 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     }
     
     // MARK: - Private Method
-
+    
     func imageResources() -> Array<AnyObject>? {
-
+        
         if self.usingImageType == .url {
             return self.imageURLs as Array<AnyObject>?
         } else if self.usingImageType == .image {
@@ -568,24 +568,24 @@ open class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderIma
     }
     
     func updateCaption() {
-
+        
         if self.usingImageType == .photo {
             if self.imageResources()?.count > 0 {
                 let photo = self.photos![self.currentPage] as Photo
                 UIView.animate(withDuration: 0.1, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: { () -> Void in
                     self.captionLabel.alpha = 0.0
                     }, completion: { (completed) -> Void in
-
+                        
                         self.captionLabel.text = photo.caption
                         UIView.animate(withDuration: 0.1, delay: 0.0, options: UIViewAnimationOptions.curveLinear, animations: { () -> Void in
                             self.captionLabel.alpha = 1.0
-                        }, completion: nil)
-
+                            }, completion: nil)
+                        
                         
                 })
             }
         }
-
+        
     }
-
+    
 }
